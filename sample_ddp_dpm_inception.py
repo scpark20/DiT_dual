@@ -66,13 +66,13 @@ def main(args):
     inception = FIDInception(dims=2048, device=device)
 
     from solvers.common import NoiseScheduleVP, model_wrapper
-    from solvers.taylor.solver.gdual_solver import GDual_Solver
+    from solvers.others.dpm_solver import DPM_Solver
 
     noise_schedule = NoiseScheduleVP(schedule="discrete", betas=torch.tensor(diffusion.betas))
-    solver = GDual_Solver(noise_schedule, args.n_steps, skip_type='time_uniform').to(device)
-    pt_file = f'/home/scpark/logpx_samplers/logs/ablations/multi3/s{args.n_steps}/step_00020000.pt'
-    state_dict = torch.load(pt_file, map_location='cpu', weights_only=False)['solver_state_dict']
-    solver.load_state_dict(state_dict, strict=True)
+    solver = DPM_Solver(noise_schedule, args.n_steps, skip_type='time_uniform').to(device)
+    # pt_file = f'/home/scpark/logpx_samplers/logs/ablations/multi3/s{args.n_steps}/step_00020000.pt'
+    # state_dict = torch.load(pt_file, map_location='cpu', weights_only=False)['solver_state_dict']
+    # solver.load_state_dict(state_dict, strict=True)
 
     # Create folder to save samples:
     model_string_name = args.model.replace("/", "-")
@@ -143,7 +143,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--model", type=str, choices=list(DiT_models.keys()), default="DiT-XL/2")
     parser.add_argument("--vae",  type=str, choices=["ema", "mse"], default="ema")
-    parser.add_argument("--sample-dir", type=str, default="samples/dual/multi3")
+    parser.add_argument("--sample-dir", type=str, default="samples/dpm")
     parser.add_argument("--per-proc-batch-size", type=int, default=10)
     parser.add_argument("--num-fid-samples", type=int, default=50_000)
     parser.add_argument("--image-size", type=int, choices=[256, 512], default=256)
